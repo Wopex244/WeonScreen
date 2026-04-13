@@ -57,10 +57,23 @@ async function apiFetch(path, options = {}) {
         headers['Authorization'] = `Bearer ${authToken}`;
     }
     const res = await fetch(`${CONFIG.apiBase}${path}`, { ...options, headers });
+    
     if (res.status === 204) return null;
-    const data = await res.json();
-    if (!res.ok) throw Object.assign(new Error(data.error || 'API error'), { status: res.status });
-    return data;
+
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (!res.ok) throw Object.assign(new Error(data.error || 'API hatası'), { status: res.status });
+        return data;
+    } else {
+        // Not JSON - probably a server crash or Vercel error page
+        const text = await res.text();
+        if (!res.ok) {
+            console.error('Non-JSON Error Response:', text);
+            throw Object.assign(new Error('Sunucu hatası oluştu (JSON olmayan yanıt). Veritabanı bağlantınızı ve ortam değişkenlerinizi kontrol edin.'), { status: res.status });
+        }
+        return text;
+    }
 }
 
 /**
