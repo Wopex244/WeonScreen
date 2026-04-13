@@ -5,17 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
-// Serverless-friendly Database Connection Middleware
-app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (err) {
-        console.error('Database connection failed:', err);
-        res.status(503).json({ error: 'Database service unavailable' });
-    }
-});
-
 const { errorHandler } = require('./middleware/errorHandler');
 
 // Route modules
@@ -26,6 +15,17 @@ const eventsRoutes = require('./routes/events');
 const tickerRoutes = require('./routes/ticker');
 
 const app = express();
+
+// ── Serverless-friendly Database Connection Middleware ──────────────────────────
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('Database connection failed:', err);
+        res.status(503).json({ error: 'Database service unavailable' });
+    }
+});
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 const allowedOrigins = [
