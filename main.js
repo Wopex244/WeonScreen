@@ -162,6 +162,19 @@ function init() {
 }
 
 // --- CORE LOGIC ---
+/**
+ * Detects if a URL is a YouTube link and returns the embed URL if it is.
+ */
+function getYoutubeEmbedUrl(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+        const videoId = match[2];
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
+    }
+    return null;
+}
 
 function handleScaling() {
     const ww = window.innerWidth;
@@ -208,14 +221,28 @@ function initBackgrounds() {
     const videoFile = CONFIG.defaultBgs.find(b => b.type === 'video');
 
     if (videoFile) {
-        const video = document.createElement('video');
-        video.src = videoFile.url;
-        video.autoplay = true;
-        video.muted = true;
-        video.loop = true;
-        video.playsInline = true;
-        video.className = 'bg-video active';
-        mediaContainer.appendChild(video);
+        const ytUrl = getYoutubeEmbedUrl(videoFile.url);
+
+        if (ytUrl) {
+            // YouTube Handler
+            const iframe = document.createElement('iframe');
+            iframe.src = ytUrl;
+            iframe.className = 'bg-video active';
+            iframe.allow = 'autoplay; encrypted-media';
+            iframe.frameBorder = '0';
+            iframe.style.pointerEvents = 'none'; // Prevent interaction
+            mediaContainer.appendChild(iframe);
+        } else {
+            // Native Video Handler
+            const video = document.createElement('video');
+            video.src = videoFile.url;
+            video.autoplay = true;
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.className = 'bg-video active';
+            mediaContainer.appendChild(video);
+        }
     } else {
         CONFIG.defaultBgs.forEach((bg, index) => {
             const img = document.createElement('img');
