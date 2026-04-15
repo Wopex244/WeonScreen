@@ -19,7 +19,9 @@
             <!-- Header Section -->
             <header class="main-header">
                 <div class="logo-area glass">
+                    <img src="/Logo/okullogo.png" alt="Okul Logo" class="header-logo logo-left">
                     <span class="logo-accent">ÖZEL ROBOTEKNO KOLEJİ</span>
+                    <img src="/Logo/meb.png" alt="MEB Logo" class="header-logo logo-right">
                 </div>
                 <div class="time-area glass">
                     <h1 id="clock">00:00:00</h1>
@@ -51,14 +53,25 @@
                 </section>
 
                 <!-- Panel 3: Menu List -->
-                <section class="menu-panel glass">
-                    <header class="panel-header">
-                        <h2>GÜNÜN MENÜSÜ</h2>
-                    </header>
-                    <div id="menu-container" class="menu-list">
-                        <!-- Dynamic Content -->
-                    </div>
-                </section>
+                <div class="right-sidebar">
+                    <section class="menu-panel glass">
+                        <header class="panel-header">
+                            <h2>GÜNÜN MENÜSÜ</h2>
+                        </header>
+                        <div id="menu-container" class="menu-list">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </section>
+
+                    <section class="birthday-panel glass">
+                        <header class="panel-header">
+                            <h2>DOĞUM GÜNÜ ÇOCUKLARI</h2>
+                        </header>
+                        <div id="birthday-container" class="birthday-list">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </section>
+                </div>
             </main>
 
             <!-- Footer Bar -->
@@ -146,6 +159,15 @@
                         <button id="add-ticker-btn" class="btn-primary" style="width:100%">Mesaj Ekle</button>
                     </div>
                     <div id="admin-ticker-list" class="admin-item-list"></div>
+                </div>
+
+                <!-- Doğum Günü Yönetimi -->
+                <div class="admin-section">
+                    <h3>Doğum Günü Yönetimi</h3>
+                    <input type="text" id="birthday-title" placeholder="Başlık (Örn: Bugün">
+                    <textarea id="birthday-content" placeholder="İsimler / Mesaj" rows="3"></textarea>
+                    <button id="add-birthday-btn" class="btn-primary" style="width:100%">Ekle</button>
+                    <div id="admin-birthday-list" class="admin-item-list"></div>
                 </div>
             </div>
         </div>

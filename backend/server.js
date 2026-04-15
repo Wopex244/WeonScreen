@@ -13,6 +13,7 @@ const announcementsRoutes = require('./routes/announcements');
 const menuRoutes = require('./routes/menu');
 const eventsRoutes = require('./routes/events');
 const tickerRoutes = require('./routes/ticker');
+const birthdayRoutes = require('./routes/birthday');
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use('/api/announcements', announcementsRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/ticker', tickerRoutes);
+app.use('/api/birthday', birthdayRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
 app.use((_req, res) => {

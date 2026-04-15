@@ -18,6 +18,7 @@ let state = {
     menu: [],       // Array of { name, item } for weekly display
     ticker: [],     // Array of { id, message }
     events: [],     // Background media
+    birthday: [],   // Array of { id, title, content }
     isLoggedIn: false
 };
 
@@ -28,6 +29,7 @@ const dateEl = document.getElementById('date');
 const annContainer = document.getElementById('announcements-container');
 const menuContainer = document.getElementById('menu-container');
 const mediaContainer = document.getElementById('bg-media-container');
+const birthdayContainer = document.getElementById('birthday-container');
 
 const headerAuthBox = document.getElementById('header-auth-box');
 const loginTrigger = document.getElementById('login-trigger');
@@ -57,6 +59,12 @@ const addMediaBtn = document.getElementById('add-media-btn');
 const tickerMessageInput = document.getElementById('ticker-message');
 const addTickerBtn = document.getElementById('add-ticker-btn');
 const adminTickerList = document.getElementById('admin-ticker-list');
+
+// Birthday Admin Elements
+const birthdayTitleInput = document.getElementById('birthday-title');
+const birthdayContentInput = document.getElementById('birthday-content');
+const addBirthdayBtn = document.getElementById('add-birthday-btn');
+const adminBirthdayList = document.getElementById('admin-birthday-list');
 
 // --- API HELPERS ---
 
@@ -160,6 +168,14 @@ async function loadDisplayData() {
         }
     } catch (e) {
         console.warn('Could not load events:', e.message);
+    }
+
+    try {
+        // Birthday entries
+        const birthdays = await apiFetch('/birthday/active');
+        state.birthday = birthdays.map(b => ({ id: b.id, title: b.title, content: b.content }));
+    } catch (e) {
+        console.warn('Could not load birthdays:', e.message);
     }
 
     renderAll();
@@ -305,7 +321,15 @@ function renderAll() {
     </div>
   `).join('');
 
-    // 3. Admin UI Sync
+    // 3. Birthday
+    birthdayContainer.innerHTML = state.birthday.map((b, index) => `
+    <div class="birthday-card" style="animation: slideIn 0.8s ease forwards; animation-delay: ${index * 0.1}s">
+      <h4>${b.title}</h4>
+      <p>${b.content}</p>
+    </div>
+  `).join('');
+
+    // 4. Admin UI Sync
     if (state.isLoggedIn) {
         document.body.classList.add('admin-mode');
         loginTrigger.classList.add('hidden');
@@ -355,6 +379,15 @@ function renderAdminLists() {
     </div>
   `).join('');
 
+    adminBirthdayList.innerHTML = state.birthday.map(b => `
+    <div class="admin-item">
+      <div class="info">
+        <h4>${b.title}</h4>
+      </div>
+      <button class="btn-danger delete-birthday-btn" data-id="${b.id}">Sil</button>
+    </div>
+  `).join('');
+
     document.querySelectorAll('.delete-ann-btn').forEach(btn => {
         btn.onclick = async (e) => {
             const id = e.currentTarget.dataset.id;
@@ -390,6 +423,19 @@ function renderAdminLists() {
                 await loadDisplayData();
             } catch (err) {
                 alert('Mesaj silinemedi: ' + err.message);
+            }
+        };
+    });
+
+    document.querySelectorAll('.delete-birthday-btn').forEach(btn => {
+        btn.onclick = async (e) => {
+            const id = e.currentTarget.dataset.id;
+            if (!confirm('Bu girişi silmek istediğinize emin misiniz?')) return;
+            try {
+                await apiFetch(`/birthday/${id}`, { method: 'DELETE' });
+                await loadDisplayData();
+            } catch (err) {
+                alert('Doğum günü girişi silinemedi: ' + err.message);
             }
         };
     });
@@ -542,6 +588,24 @@ function setupEventListeners() {
             await loadDisplayData();
         } catch (err) {
             alert('Mesaj eklenemedi: ' + err.message);
+        }
+    };
+
+    addBirthdayBtn.onclick = async () => {
+        const title = birthdayTitleInput.value.trim();
+        const content = birthdayContentInput.value.trim();
+        if (!title || !content) return;
+
+        try {
+            await apiFetch('/birthday', {
+                method: 'POST',
+                body: JSON.stringify({ title, content, is_active: true }),
+            });
+            birthdayTitleInput.value = '';
+            birthdayContentInput.value = '';
+            await loadDisplayData();
+        } catch (err) {
+            alert('Doğum günü girişi eklenemedi: ' + err.message);
         }
     };
 

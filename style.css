@@ -140,7 +140,15 @@ body {
   /* Wider logo area */
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 40px;
+}
+
+.header-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }
 
 .time-area {
@@ -236,13 +244,36 @@ body {
   overflow: hidden;
 }
 
-.announcements-panel,
-.menu-panel {
+.announcements-panel {
   padding: 25px;
   /* More compact */
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
+}
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.menu-panel {
+  flex: 1.5;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.birthday-panel {
+  flex: 1;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -350,6 +381,33 @@ body {
   /* Scaled down slightly */
   color: #fff;
   line-height: 1.4;
+}
+
+/* Birthday List */
+.birthday-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.birthday-card {
+  background: rgba(243, 156, 18, 0.08);
+  padding: 15px 20px;
+  border-radius: 15px;
+  border-left: 4px solid var(--accent);
+}
+
+.birthday-card h4 {
+  color: var(--accent);
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+
+.birthday-card p {
+  color: #fff;
+  font-size: 1.1rem;
 }
 
 /* Footer Bar */

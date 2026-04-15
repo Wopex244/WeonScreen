@@ -62,6 +62,19 @@ const ticker = {
     ],
 };
 
+const birthday = {
+    create: [
+        body('title').trim().notEmpty().withMessage('Title is required'),
+        body('content').trim().notEmpty().withMessage('Content is required'),
+        body('is_active').optional().isBoolean(),
+    ],
+    update: [
+        body('title').optional().trim().notEmpty(),
+        body('content').optional().trim().notEmpty(),
+        body('is_active').optional().isBoolean(),
+    ],
+};
+
 const auth = {
     login: [
         body('username').trim().notEmpty().withMessage('Username is required'),
@@ -69,4 +82,4 @@ const auth = {
     ],
 };
 
-module.exports = { announcements, menu, events, ticker, auth };
+module.exports = { announcements, menu, events, ticker, birthday, auth };
