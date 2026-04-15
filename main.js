@@ -210,7 +210,7 @@ function getYoutubeEmbedUrl(url) {
     const match = url.match(regExp);
     if (match && match[2].length === 11) {
         const videoId = match[2];
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1`;
     }
     return null;
 }
@@ -255,7 +255,7 @@ function initBackgrounds() {
             const iframe = document.createElement('iframe');
             iframe.src = ytUrl;
             iframe.className = 'bg-video active';
-            iframe.allow = 'autoplay; encrypted-media';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
             iframe.frameBorder = '0';
             iframe.style.pointerEvents = 'none'; // Prevent interaction
             mediaContainer.appendChild(iframe);
@@ -618,6 +618,13 @@ function setupEventListeners() {
         // Try to play any video in the media container (if unmuted autoplay was blocked)
         const activeVideos = mediaContainer.querySelectorAll('video');
         activeVideos.forEach(v => v.play().catch(err => console.warn("Video play failed:", err)));
+
+        // For YouTube frames, send play command
+        const activeIframes = mediaContainer.querySelectorAll('iframe');
+        activeIframes.forEach(f => {
+            f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            f.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        });
 
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(() => { });
