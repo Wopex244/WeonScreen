@@ -210,7 +210,7 @@ function getYoutubeEmbedUrl(url) {
     const match = url.match(regExp);
     if (match && match[2].length === 11) {
         const videoId = match[2];
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
     }
     return null;
 }
@@ -264,7 +264,7 @@ function initBackgrounds() {
             const video = document.createElement('video');
             video.src = videoFile.url;
             video.autoplay = true;
-            video.muted = true;
+            video.muted = false;
             video.loop = true;
             video.playsInline = true;
             video.className = 'bg-video active';
