@@ -355,6 +355,7 @@ function renderAdminLists() {
     adminMenuList.innerHTML = state.menu.map((item, index) => `
     <div style="margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
       <input type="hidden" class="menu-id-input" data-index="${index}" value="${item.id || ''}">
+      <input type="hidden" class="menu-date-input" data-index="${index}" value="${item.date}">
       <input type="text" class="menu-title-input" data-index="${index}" value="${item.name}" placeholder="Başlık (Örn: Pazartesi)" style="margin-bottom:10px; font-weight:700; color: var(--accent);">
       <input type="text" class="menu-item-input" data-index="${index}" value="${item.item}" placeholder="Menü İçeriği" style="margin-bottom:0">
     </div>
@@ -518,17 +519,19 @@ function setupEventListeners() {
 
     saveMenuBtn.onclick = async () => {
         const idInputs = document.querySelectorAll('.menu-id-input');
-        const titleInputs = document.querySelectorAll('.menu-title-input');
+        const dateInputs = document.querySelectorAll('.menu-date-input');
         const itemInputs = document.querySelectorAll('.menu-item-input');
 
         const updates = [];
-        titleInputs.forEach((input, index) => {
-            const id = idInputs[index]?.value;
+        idInputs.forEach((input, index) => {
+            const id = input.value;
+            const date = dateInputs[index].value;
             const rawItem = itemInputs[index].value;
             // Split comma-separated item back into fields (best-effort for saved data)
             const parts = rawItem.split(',').map(s => s.trim());
             updates.push({
                 id,
+                date,
                 soup: parts[0] || null,
                 main_course: parts[1] || null,
                 side_dish: parts[2] || null,
@@ -538,16 +541,25 @@ function setupEventListeners() {
 
         try {
             await Promise.all(updates.map(u => {
-                if (!u.id) return Promise.resolve();
-                return apiFetch(`/menu/${u.id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        soup: u.soup,
-                        main_course: u.main_course,
-                        side_dish: u.side_dish,
-                        dessert: u.dessert,
-                    }),
-                });
+                const body = {
+                    soup: u.soup,
+                    main_course: u.main_course,
+                    side_dish: u.side_dish,
+                    dessert: u.dessert,
+                };
+
+                if (u.id) {
+                    return apiFetch(`/menu/${u.id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(body),
+                    });
+                } else {
+                    // Create new entry if it doesn't exist
+                    return apiFetch(`/menu`, {
+                        method: 'POST',
+                        body: JSON.stringify({ ...body, date: u.date }),
+                    });
+                }
             }));
             await loadDisplayData();
             alert('Menü Kaydedildi!');
